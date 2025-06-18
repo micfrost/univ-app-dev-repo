@@ -13,33 +13,24 @@ services:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=password
     ports:
-      # Udostępniamy port bazy danych na zewnątrz (host:kontener)
-      # Dzięki temu możesz podłączyć się do bazy np. przez DBeaver
       - "5432:5432"
     volumes:
-      # Ten wolumen zapewnia, że dane bazy nie znikną po restarcie kontenera
       - postgres_data:/var/lib/postgresql/data
 
   # Serwis dla aplikacji Spring Boot
   app:
     container_name: spring_boot_app
-    # Buduje obraz na podstawie pliku Dockerfile w folderze ./backend-api
     build: ./backend-api
     restart: on-failure
-    # Aplikacja uruchomi się dopiero, gdy serwis 'db' będzie gotowy
     depends_on:
       - db
     ports:
-      # Udostępniamy port aplikacji na zewnątrz
       - "8080:8080"
     environment:
-      # Przekazujemy zmienne środowiskowe do aplikacji Spring Boot
-      # Spring automatycznie je odczyta i skonfiguruje połączenie
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/products_db
       - SPRING_DATASOURCE_USERNAME=admin
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
-# Definicja wolumenów, które mają być zarządzane przez Dockera
 volumes:
   postgres_data:

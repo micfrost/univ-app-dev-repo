@@ -1,24 +1,26 @@
-# --- Etap 1: Budowanie aplikacji ---
-# Używamy oficjalnego obrazu Maven z JDK 21 do zbudowania aplikacji
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+# --- Etap 1: Budowanie aplikacji (z Mavenem i JDK 21) ---
+# Używamy oficjalnego, multi-platformowego obrazu z Temurin JDK 21
+FROM eclipse-temurin:21-jdk AS build
 
-# Ustawiamy katalog roboczy wewnątrz kontenera
+# Ustawiamy katalog roboczy
 WORKDIR /app
 
-# Kopiujemy plik `pom.xml`, aby pobrać zależności
+# Kopiujemy pliki Maven Wrappera
+COPY .mvn/ .mvn/
+COPY mvnw .
+# Kopiujemy plik pom.xml, aby wykorzystać cache'owanie warstw Dockera
 COPY pom.xml .
-RUN mvn dependency:go-offline
 
 # Kopiujemy resztę kodu źródłowego
 COPY src ./src
 
-# Budujemy aplikację, tworząc plik .jar. Pomijamy testy, aby przyspieszyć budowanie.
-RUN mvn clean package -DskipTests
+# Nadajemy uprawnienia do wykonania dla wrappera i budujemy aplikację
+RUN chmod +x mvnw && ./mvnw clean package -DskipTests
 
 
 # --- Etap 2: Tworzenie finalnego, lekkiego obrazu ---
-# Używamy lekkiego obrazu z Javą 21 do uruchomienia aplikacji
-FROM eclipse-temurin:21-jre-alpine
+# Używamy lekkiego, multi-platformowego obrazu z Javą 21
+FROM eclipse-temurin:21-jre
 
 # Ustawiamy katalog roboczy
 WORKDIR /app
@@ -29,5 +31,5 @@ COPY --from=build /app/target/*.jar app.jar
 # Definiujemy port, na którym nasłuchuje aplikacja
 EXPOSE 8080
 
-# Polecenie, które zostanie wykonane podczas uruchamiania kontenera
+# Polecenie uruchamiające aplikację
 ENTRYPOINT ["java", "-jar", "app.jar"]

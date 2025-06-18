@@ -1,0 +1,44 @@
+# Skompilowana aplikacja (build output)
+dist/
+/dist/
+/tmp/
+/out-tsc/
+/bazel-out/
+
+# Folder z zależnościami Node.js
+# Ten folder jest bardzo duży i zależności powinny być instalowane za pomocą `npm install`
+/node_modules/
+
+# Pliki logów npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Pliki tymczasowe i konfiguracyjne edytorów
+.DS_Store
+.vscode/
+
+# Pliki generowane przez testy (raporty pokrycia kodu)
+/coverage/
+
+# Pliki środowiskowe (powinny zawierać tylko lokalne sekrety)
+src/environments/*.local.ts
+
+# WAŻNA UWAGA:
+# Plik `package-lock.json` (lub `yarn.lock`) NIE powinien być ignorowany.
+# Zapewnia on, że każdy deweloper i system CI instaluje dokładnie te same wersje zależności.
+# Dlatego nie ma go na tej liście.
+
+# Node
+node_modules/
+dist/
+build/
+
+# Logi npm/yarn
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Środowiska
+.env
+*.env.local
